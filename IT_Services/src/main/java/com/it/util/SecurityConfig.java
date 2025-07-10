@@ -11,7 +11,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
 import com.it.services.CustomUserDetailsService;
 
 @Configuration
@@ -20,30 +19,32 @@ public class SecurityConfig {
 	
 	    @Autowired
 	    private CustomUserDetailsService userDetailsService;
-
+	    
 	    @Bean
 	    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder encoder) throws Exception {
-	        return http.getSharedObject(AuthenticationManagerBuilder.class)
-	                .userDetailsService(userDetailsService)
-	                .passwordEncoder(encoder)
-	                .and()
-	                .build();
+	        
+	    	return http.getSharedObject(AuthenticationManagerBuilder.class)
+	                   .userDetailsService(userDetailsService)
+	                   .passwordEncoder(encoder)
+	                   .and()
+	                   .build();
 	    }
-
-
+	    
+	    
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                                        http.csrf().disable()
                                            .authorizeHttpRequests()
-                                           .requestMatchers("/login","/auth/login").permitAll()
+                                           .requestMatchers("/tlogin","/ssignup","/tsignup","/slogin").permitAll()
                                            .anyRequest().authenticated()
                                            .and()
                                            .sessionManagement()
                                            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
                     return http.build();
-    }
+       }
 
+   
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance(); // only for dev/testing

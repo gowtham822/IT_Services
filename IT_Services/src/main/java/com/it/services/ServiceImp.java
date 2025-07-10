@@ -1,12 +1,14 @@
 package com.it.services;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.it.entity.StudentEntity;
 import com.it.entity.TutorEntity;
+import com.it.pojo.Student;
 import com.it.pojo.Tutor;
+import com.it.repository.StudentRepo;
 import com.it.repository.TutorRepo;
 
 @Service
@@ -14,6 +16,9 @@ public class ServiceImp implements Services{
 
 	@Autowired
 	private TutorRepo tutorRepo;
+	
+	@Autowired
+	private StudentRepo studentRepo ;
 		
 	public TutorEntity checkEmail(String email) {
 		
@@ -37,5 +42,32 @@ public class ServiceImp implements Services{
 		tutorRepo.save(t);
 		
 	}
+
+	@Override
+	public boolean saveStudent(Student student) {
+		
+		StudentEntity s = studentRepo.findBysEmail(student.getsEmail());
+		
+		if(s==null) {
+		
+		StudentEntity st = new StudentEntity();
+	
+		ModelMapper modelMapper = new ModelMapper();
+
+		modelMapper.typeMap(Student.class, StudentEntity.class)
+		           .addMappings(mapper -> mapper.skip(StudentEntity::setSId)); // Skip ID
+
+		modelMapper.map(student,  st);
+		
+		studentRepo.save(st);
+		
+		return true;
+		
+		}
+		
+		else 
+			
+			return false;
+		}
 
 }

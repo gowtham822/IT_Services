@@ -5,9 +5,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "STUDENT")
+@Data
 public class StudentEntity {
 	
 	@Id
@@ -23,5 +25,7 @@ public class StudentEntity {
 	private Long sPhoneNumber;
 	
 	private String sCourse;
+	
+	
 
 }

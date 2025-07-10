@@ -4,28 +4,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.it.entity.TutorEntity;
 import com.it.pojo.JwtResponse;
 import com.it.pojo.LoginRequest;
-import com.it.pojo.Tutor;
+import com.it.pojo.Student;
 import com.it.services.CustomUserDetailsService;
 import com.it.services.Services;
 import com.it.util.JwtUtil;
 
 @RestController
-public class TutorController {
+public class StudentController {
 	
 	@Autowired
-	private Services service;
+	private Services services;
 	
 	@Autowired
     private AuthenticationManager authManager;
@@ -33,31 +30,23 @@ public class TutorController {
 	@Autowired
     private JwtUtil jwtUtil;
 	
-	 @Autowired
-	 private CustomUserDetailsService userDetailsService;
+	@Autowired
+	private CustomUserDetailsService userDetailsService;
 	
-	@PostMapping(value = "/tsignup" , consumes = "application/json",produces = "text/plain")
-	public ResponseEntity<String> signUp(@RequestBody Tutor tutor){
+	@PostMapping("/ssignup")
+	public ResponseEntity<String> signUp(@RequestBody Student student){
 		
-		String email = tutor.gettEmail();
+		boolean saveStudent = services.saveStudent(student);
 		
-		System.out.println(email);
-		
-		TutorEntity t = service.checkEmail(email);
-		
-		if(t != null) {
+		if(saveStudent)
 			
-			service.saveTutor(tutor);
-			
-			return ResponseEntity.ok("Tutor registered successfully");
-        }
+			return ResponseEntity.ok("Registered Successfully");
 		
-		else
-			return ResponseEntity.ok("Invalid SignUp");
+		return ResponseEntity.ok("Student Already Exists");
 		
 	}
 	
-	@PostMapping("/tlogin")
+	@PostMapping("/slogin")
 	public ResponseEntity<?> login(@RequestBody LoginRequest request){
 		
 		System.out.println("Login endpoint hit");
@@ -76,11 +65,11 @@ public class TutorController {
 	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("❌ Invalid email or password");
 		}
 		
-		    final  UserDetails user= userDetailsService.loadUserByUsername(request.getEmail());
+		   final  UserDetails user= userDetailsService.loadUserByUsername(request.getEmail());
 		    
-		    final String jwttoken = jwtUtil.generateToken(user);
+		   final String jwttoken = jwtUtil.generateToken(user);
 		    	
-		    return ResponseEntity.ok(new JwtResponse(jwttoken, request.getEmail()));
+		   return ResponseEntity.ok(new JwtResponse(jwttoken, request.getEmail()));
 	}
 
 }
